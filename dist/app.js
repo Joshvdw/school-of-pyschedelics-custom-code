@@ -635,16 +635,27 @@ function handleVideoClick() {
                     video.currentTime = 0;
                     playBtn.dataset.clicked = "true";
                 }
+                pauseOtherVideos(video);
                 return; // exit
             }
             // Skip play/pause logic if video is in fullscreen
-            if (document.fullscreenElement === video) return;
+            if (document.fullscreenElement === video) {
+                if (video.paused) {
+                    resetCurrentPlayBtn(true);
+                    showHideVideoInfo(true);
+                } else {
+                    resetCurrentPlayBtn(false);
+                    showHideVideoInfo(false);
+                }
+                return;
+            }
             // custom play or pause video logic for clicking on video itself
             if (hasPlayed) {
                 video.pause();
                 resetCurrentPlayBtn(false);
                 showHideVideoInfo(false);
             } else if (video.paused) {
+                pauseOtherVideos(video);
                 video.play();
                 resetCurrentPlayBtn(true);
                 showHideVideoInfo(true);
@@ -655,6 +666,7 @@ function handleVideoClick() {
                     playBtn.dataset.clicked = "true";
                 }
                 volumeBtn.click();
+                pauseOtherVideos(video);
                 video.play();
                 resetCurrentPlayBtn(true);
                 showHideVideoInfo(true);
@@ -702,7 +714,34 @@ function resetAllPlayBtns(inverse = false) {
         btn.style.display = inverse ? "block" : "none";
     });
 }
-// Call the function when DOM is ready
+// Utility function to pause all other playing videos
+function pauseOtherVideos(currentVideo) {
+    const allVideos = document.querySelectorAll("video");
+    allVideos.forEach((otherVideo)=>{
+        if (otherVideo !== currentVideo && !otherVideo.paused && !otherVideo.muted) {
+            otherVideo.pause();
+            // Reset the play/pause buttons for the paused video's wrapper
+            const otherWrapper = otherVideo.closest(".video-wrapper");
+            if (otherWrapper) {
+                const resetBtn = (inverse = false)=>{
+                    const playBtn = otherWrapper.querySelector('[f-data-video="play-button"]');
+                    const pauseBtn = otherWrapper.querySelector('[f-data-video="pause-button"]');
+                    if (playBtn) playBtn.style.display = inverse ? "none" : "block";
+                    if (pauseBtn) pauseBtn.style.display = inverse ? "block" : "none";
+                };
+                resetBtn(false);
+                // Hide video info for the paused video
+                const videoInfo = otherWrapper.querySelector(".video-heading_wrapper");
+                const videoControls = otherWrapper.querySelectorAll(".time-controls-wrapper, .video-caption_wrapper");
+                if (videoInfo) videoInfo.style.display = "block";
+                if (videoControls) videoControls.forEach((div)=>{
+                    div.style.display = "none";
+                    div.style.opacity = 0;
+                });
+            }
+        }
+    });
+}
 document.addEventListener("DOMContentLoaded", function() {
     resetAllPlayBtns();
     handleVideoClick();
