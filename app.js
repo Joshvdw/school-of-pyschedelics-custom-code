@@ -95,18 +95,23 @@ function handleVideoClick() {
       // Show/hide video info
       function showHideVideoInfo(inverse = false) {
         const videoInfo = wrapper.querySelector(".video-heading_wrapper");
-        const videoControls = wrapper.querySelectorAll(
-          ".time-controls-wrapper, .video-caption_wrapper"
-        );
+        const timeControls = wrapper.querySelector(".time-controls-wrapper");
+        const videoCaption = wrapper.querySelector(".video-caption_wrapper");
 
         if (videoInfo) {
           videoInfo.style.display = inverse ? "none" : "block";
         }
-        if (videoControls) {
-          videoControls.forEach((div) => {
-            div.style.display = inverse ? "block" : "none";
-            div.style.opacity = inverse ? 1 : 0;
-          });
+
+        // Handle time controls for all screen sizes
+        if (timeControls) {
+          timeControls.style.display = inverse ? "flex" : "none";
+          timeControls.style.opacity = inverse ? 1 : 0;
+        }
+
+        // Handle video caption only for screens larger than 767px
+        if (videoCaption && window.innerWidth > 767) {
+          videoCaption.style.display = inverse ? "block" : "none";
+          videoCaption.style.opacity = inverse ? 1 : 0;
         }
       }
 
