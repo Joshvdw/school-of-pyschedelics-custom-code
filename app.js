@@ -128,18 +128,21 @@ function handleVideoClick() {
         }
       }
 
-      // Pause video when it's completely out of viewport
+      // Pause video when 15% or less is in viewport
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (!entry.isIntersecting && !video.paused) {
+            if (entry.intersectionRatio <= 0.15 && !video.paused) {
               video.pause();
               resetCurrentPlayBtn(false);
               showHideVideoInfo(false);
             }
           });
         },
-        { threshold: 0 }
+        {
+          threshold: [0, 0.15], // Track both when completely hidden and at 15% visible
+          rootMargin: "0px", // No margin adjustment needed
+        }
       );
       observer.observe(video);
     });
