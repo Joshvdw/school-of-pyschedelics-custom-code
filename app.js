@@ -53,6 +53,7 @@ function handleVideoClick() {
           video.currentTime = 0;
           playBtn.dataset.clicked = "true";
         }
+        video.loop = false;
         pauseOtherVideos(video);
         return; // exit
       }
@@ -77,6 +78,7 @@ function handleVideoClick() {
       } else if (video.paused) {
         pauseOtherVideos(video);
         video.play();
+        video.loop = false;
         resetCurrentPlayBtn(true);
         showHideVideoInfo(true);
       } else {
@@ -88,6 +90,7 @@ function handleVideoClick() {
         volumeBtn.click();
         pauseOtherVideos(video);
         video.play();
+        video.loop = false;
         resetCurrentPlayBtn(true);
         showHideVideoInfo(true);
       }
